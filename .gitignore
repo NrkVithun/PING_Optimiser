@@ -1,0 +1,17 @@
+# Python build files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller build files
+build/
+*.spec
+
+# Keep only the final executable in dist/
+dist/*
+!dist/TCP_Optimizer.exe
+
+# Environment
+.env
+venv/
+.venv/
