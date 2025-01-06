@@ -1,0 +1,79 @@
+I'll compile a comprehensive list of the network and TCP/IP settings modified in the video:
+
+Network Adapter Settings (Advanced Properties):
+1. Power Management
+- Uncheck power management options
+
+2. Disabled Advanced Settings:
+- Adaptive interframe spacing
+- ARP offload
+- PME (Power Management Event)
+- Energy efficient ethernet
+- Flow control
+
+3. Kept Enabled:
+- Gigabit Master Slave mode
+- Gigabit physical mode
+- Autodetect
+
+4. Interrupt and Moderation Settings:
+- Disabled interrupt moderation
+- Disabled moderation rate
+
+5. Offload Settings (All Turned Off):
+- IPv4 checksum offload
+- Jumbo packet
+- LSO (Large Send Offload) for IPv4 and IPv6
+- TCP checksum offload
+- UDP checksum offload
+
+6. Buffer Settings:
+- Receive buffers set to 2048 (or 512/1024)
+- Transmit buffers matched/scaled with receive buffers
+- Recommended ratio: transmit buffers should be double receive buffers
+
+7. Other Network Adapter Settings:
+- Disabled locally administered address
+- Disabled log link state event
+- Max number of RSS queues set to 2
+- Enabled packet priority in VLAN
+- Disabled PTP Hardware timestamp
+- Disabled software timestamp
+- Speed and duplex set to auto-negotiation or highest full duplex
+
+TCP Optimizer Settings:
+1. TCP/IP Advanced Tuning:
+- Auto-tuning disabled
+- Scaling heuristics disabled
+- Congestion control provider: CTCP
+- RSS (Receive-Side Scaling) disabled
+- Time to live set to 64
+- NC capability enabled
+- Checksum offloading disabled
+- Chimney offload disabled
+- LSO disabled
+- TCP 1323 timestamps enabled
+
+2. Connection Parameters:
+- Max connections per server: 10
+- Local priority: 4
+- Host priority: 5
+- DNS priority: 6
+- Net priority: 7
+- Max SYN retransmissions: 2
+- Non-SAC resiliency: disabled
+- Initial RTO (Retransmission Timeout): 2000
+- Minimum RTO: 300
+- QoS non-best effort limit: 0
+- Network throttling index: disabled
+- System responsiveness: gaming mode
+- Large system cache: enabled (optimized max)
+- Max user ports: 65534
+- TCP timed delay: 30
+
+Additional Tweaks:
+- DNS changed to Cloudflare (1.0.0.1)
+- Network adapter onboard processor enabled
+- Create system restore point before modifications
+
+This comprehensive list covers nearly all the network and TCP/IP optimizations mentioned in the video for improving gaming performance and reducing ping.
