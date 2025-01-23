@@ -127,6 +127,14 @@ SUBHEADING_LABEL_STYLE = """
     }
 """
 
+SUCCESS_LABEL_STYLE = """
+    QLabel {
+        color: #00ff00;  /* Green color for success */
+        font-size: 16px;
+        font-weight: bold;
+    }
+"""
+
 # Button Styles
 BUTTON_STYLE = """
     QPushButton {
@@ -283,12 +291,12 @@ GLASS_PANEL_STYLE = """
 # Popup Style
 POPUP_STYLE = """
     QLabel {
-        background-color: rgba(0, 255, 255, 0.2);
-        color: #00ff00;
-        font-size: 18px;
-        font-weight: bold;
-        padding: 25px;
-        border: 1px solid #00ff00;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ffff;
+        border: 2px solid #00ffff;
         border-radius: 15px;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: bold;
     }
 """

@@ -9,95 +9,87 @@ class CherryBlossom:
         self.pos = pos
         self.size = size
         self.angle = random.uniform(0, 360)
-        self.speed = random.uniform(1, 3)
-        self.oscillation = random.uniform(-2, 2)
-        self.alpha = 255
-        self.is_packet = False
-        self.packet_progress = 0
-        self.initial_pos = QPointF(pos)
+        self.speed = random.uniform(1, 2)  # Slightly faster for better movement
+        self.oscillation = random.uniform(-1.5, 1.5)
+        self.alpha = random.randint(150, 200)  # Randomize transparency
+        self.wave_offset = random.uniform(0, 2 * math.pi)
+        self.drift_direction = random.choice([-1, 1])  # Random left/right drift
 
-    def update(self, optimized):
-        if not self.is_packet:
-            self.pos.setY(self.pos.y() + self.speed)
-            self.pos.setX(self.pos.x() + math.sin(self.pos.y() * 0.1) * self.oscillation)
-            self.angle += 2
-            
-            if optimized and random.random() < 0.02:  # 2% chance to transform
-                self.is_packet = True
-                self.initial_pos = QPointF(self.pos)
-        else:
-            # Packet movement
-            self.packet_progress += 5 if optimized else 2
-            angle = math.radians(self.packet_progress)
-            radius = 100
-            self.pos = QPointF(
-                self.initial_pos.x() + math.cos(angle) * radius,
-                self.initial_pos.y() + math.sin(angle) * radius
-            )
+    def update(self):
+        # Vertical movement
+        self.pos.setY(self.pos.y() + self.speed)
+        
+        # Horizontal movement with drift
+        drift = math.sin(self.wave_offset + self.pos.y() * 0.05) * 0.8
+        self.pos.setX(self.pos.x() + (drift * self.drift_direction))
+        
+        # Gentle rotation
+        self.angle += 1
 
 class CherryBlossomAnimation(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents)  # Make widget transparent to mouse events
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Remove window frame
-        self.setAttribute(Qt.WA_TranslucentBackground)  # Enable translucent background
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.lower()
         
         self.petals = []
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_animation)
-        self.timer.start(16)  # ~60 FPS
-        self.is_optimized = False
-        self.optimization_progress = 0
-        self.target_petal_count = 20
+        self.timer.start(25)  # Adjusted for better performance
+        self.target_petal_count = 25  # Increased petal count
         
         # Create initial petals
-        self.create_petals(20)
+        self.create_petals(self.target_petal_count)
 
     def create_petals(self, count):
         current_count = len(self.petals)
         if count > current_count:
-            # Add more petals
             for _ in range(count - current_count):
+                # Spread petals across the top of the screen
+                spawn_zone = random.randint(0, 3)  # 0: left, 1: center-left, 2: center-right, 3: right
+                if spawn_zone == 0:  # Left side
+                    x = random.uniform(0, self.width() * 0.25)
+                elif spawn_zone == 1:  # Center-left
+                    x = random.uniform(self.width() * 0.25, self.width() * 0.5)
+                elif spawn_zone == 2:  # Center-right
+                    x = random.uniform(self.width() * 0.5, self.width() * 0.75)
+                else:  # Right side
+                    x = random.uniform(self.width() * 0.75, self.width())
+                
                 pos = QPointF(
-                    random.uniform(0, self.width()),
-                    random.uniform(-50, self.height())
+                    x,
+                    random.uniform(-50, self.height() * 0.2)  # Spawn in top fifth
                 )
-                size = random.uniform(5, 15)
+                size = random.uniform(8, 12)
                 self.petals.append(CherryBlossom(pos, size))
         else:
-            # Remove excess petals
             self.petals = self.petals[:count]
 
-    def set_optimized(self, optimized):
-        self.is_optimized = optimized
-        # Adjust petal count based on optimization state
-        self.target_petal_count = 50 if optimized else 20
-        if optimized:
-            self.optimization_progress = min(100, self.optimization_progress + 5)
-        else:
-            self.optimization_progress = max(0, self.optimization_progress - 5)
-
     def update_animation(self):
-        # Update petal count gradually
-        current_count = len(self.petals)
-        if current_count < self.target_petal_count:
-            self.create_petals(current_count + 1)
-        elif current_count > self.target_petal_count:
-            self.petals.pop()
-
         # Update existing petals
         for petal in self.petals[:]:
-            petal.update(self.is_optimized)
+            petal.update()
             
             # Remove petals that are out of bounds
-            if petal.pos.y() > self.height() + 50:
+            if (petal.pos.y() > self.height() + 50 or 
+                petal.pos.x() < -50 or 
+                petal.pos.x() > self.width() + 50):
                 self.petals.remove(petal)
-                # Create new petal at top
-                pos = QPointF(
-                    random.uniform(0, self.width()),
-                    -50
-                )
-                size = random.uniform(5, 15)
+                # Create new petal at random position at top
+                spawn_zone = random.randint(0, 3)
+                if spawn_zone == 0:  # Left side
+                    x = random.uniform(0, self.width() * 0.25)
+                elif spawn_zone == 1:  # Center-left
+                    x = random.uniform(self.width() * 0.25, self.width() * 0.5)
+                elif spawn_zone == 2:  # Center-right
+                    x = random.uniform(self.width() * 0.5, self.width() * 0.75)
+                else:  # Right side
+                    x = random.uniform(self.width() * 0.75, self.width())
+                
+                pos = QPointF(x, random.uniform(-50, 0))
+                size = random.uniform(8, 12)
                 self.petals.append(CherryBlossom(pos, size))
 
         self.update()
@@ -107,10 +99,7 @@ class CherryBlossomAnimation(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
 
         for petal in self.petals:
-            if not petal.is_packet:
-                self.draw_petal(painter, petal)
-            else:
-                self.draw_packet(painter, petal)
+            self.draw_petal(painter, petal)
 
     def draw_petal(self, painter, petal):
         painter.save()
@@ -130,21 +119,7 @@ class CherryBlossomAnimation(QWidget):
             0, -petal.size/2
         )
 
-        color = QColor(255, 192, 203, 150)  # Semi-transparent pink
+        # Use only pink colors with varying transparency
+        color = QColor(255, 182, 193, petal.alpha)  # Light pink
         painter.fillPath(path, color)
-        painter.restore()
-
-    def draw_packet(self, painter, petal):
-        painter.save()
-        painter.translate(petal.pos)
-        
-        # Draw data packet
-        color = QColor(0, 255, 255, 150)  # Semi-transparent cyan
-        painter.fillRect(-petal.size/2, -petal.size/2, petal.size, petal.size, color)
-        
-        # Add some details to make it look like a data packet
-        painter.setPen(QColor(0, 200, 200, 150))
-        painter.drawLine(-petal.size/2, 0, petal.size/2, 0)
-        painter.drawLine(0, -petal.size/2, 0, petal.size/2)
-        
         painter.restore()

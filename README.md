@@ -2,6 +2,8 @@
 
 A modern TCP optimization tool with a beautiful UI that helps optimize your network settings for better performance.
 
+![TCP Optimizer Demo](optimised_app.gif)
+
 ## Features
 
 - Real-time ping statistics monitoring
